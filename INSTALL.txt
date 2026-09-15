@@ -1,0 +1,6 @@
+Install: copy the "syncthing-calendar" folder (not this whole folder) into
+<your vault>/.obsidian/plugins/  so it ends up as  .obsidian/plugins/syncthing-calendar/main.js
+Then turn the plugin off and on in Settings > Community plugins. It should say v3.1.9.
+
+Publish: upload everything in "github-repo" to GitHub, then make a release with tag 3.1.9
+and attach main.js, manifest.json and styles.css from the "syncthing-calendar" folder.

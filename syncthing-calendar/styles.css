@@ -1,0 +1,387 @@
+/* Syncthing Calendar – iOS Calendar-style look. Uses Obsidian theme variables with fallbacks. */
+.orc {
+  --orc-accent: #ff3b30;
+  --orc-bg: var(--background-primary, #fff);
+  --orc-bg2: var(--background-secondary, #f7f7f8);
+  --orc-text: var(--text-normal, #1c1c1e);
+  --orc-muted: var(--text-muted, #8e8e93);
+  --orc-faint: var(--text-faint, #c7c7cc);
+  --orc-line: var(--background-modifier-border, #e5e5ea);
+  --orc-gutter: 46px;
+  --orc-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", var(--font-interface, system-ui), sans-serif;
+  font-family: var(--orc-font);
+  color: var(--orc-text);
+  background: var(--orc-bg);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 320px;
+  position: relative;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  font-size: 14px;
+  line-height: 1.25;
+}
+.orc-view-content { padding: 0 !important; }
+.orc-embed { position: relative; border: 1px solid var(--orc-line); border-radius: 12px; overflow: hidden; }
+.orc * { box-sizing: border-box; }
+
+/* ---------- header ---------- */
+.orc-header { flex: none; padding: 6px 10px 4px; border-bottom: 1px solid var(--orc-line); }
+.orc-nav { display: flex; align-items: center; gap: 8px; height: 34px; }
+.orc-nav-left, .orc-nav-right { display: flex; align-items: center; gap: 6px; flex: none; }
+.orc-nav-left { min-width: 92px; }
+.orc-nav-right { min-width: 60px; justify-content: flex-end; }
+.orc-icon-btn { color: var(--orc-accent); cursor: pointer; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 8px; flex: none; }
+.orc-icon-btn:hover { background: var(--orc-bg2); }
+.orc-icon-btn svg { display: block; }
+.orc-back { color: var(--orc-accent); cursor: pointer; display: flex; align-items: center; gap: 2px; font-size: 16px; }
+.orc-chev { font-size: 26px; line-height: 1; margin-top: -3px; }
+.orc-seg { flex: 1; display: flex; background: var(--orc-bg2); border-radius: 9px; padding: 2px; max-width: 320px; margin: 0 auto; }
+.orc-seg-btn { flex: 1; text-align: center; font-size: 13px; padding: 4px 0; border-radius: 7px; cursor: pointer; color: var(--orc-text); }
+.orc-seg-btn.is-active { background: var(--orc-bg); box-shadow: 0 1px 3px rgba(0,0,0,.15); font-weight: 600; }
+
+.orc-title-row { display: flex; align-items: center; gap: 6px; padding: 4px 0 2px; }
+.orc-title { flex: 1; font-size: 24px; font-weight: 700; letter-spacing: -0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.orc-title-accent { color: var(--orc-accent); }
+.orc-arrow { color: var(--orc-accent); font-size: 26px; line-height: 1; cursor: pointer; padding: 0 8px; }
+
+/* ---------- body / footer ---------- */
+.orc-body { flex: 1; min-height: 0; display: flex; flex-direction: column; position: relative; }
+.orc-footer { flex: none; display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; border-top: 1px solid var(--orc-line); background: var(--orc-bg2); }
+.orc-foot-btn { color: var(--orc-accent); font-size: 15px; cursor: pointer; }
+.orc-foot-spacer { width: 60px; }
+.orc-muted { color: var(--orc-muted, var(--text-muted, #8e8e93)); font-size: 12px; }
+.orc-empty { color: var(--orc-muted); padding: 16px; text-align: center; font-size: 14px; }
+.orc-link { color: var(--orc-accent); cursor: pointer; }
+
+/* calendars panel */
+.orc-calpanel { position: absolute; left: 0; right: 0; bottom: 0; max-height: 60%; background: var(--orc-bg); border-top: 1px solid var(--orc-line); border-radius: 14px 14px 0 0; box-shadow: 0 -6px 24px rgba(0,0,0,.18); z-index: 20; overflow: auto; }
+.orc-calpanel-head { display: flex; justify-content: space-between; padding: 12px 16px; font-weight: 600; font-size: 16px; border-bottom: 1px solid var(--orc-line); }
+.orc-calrow { display: flex; align-items: center; gap: 12px; padding: 11px 16px; border-bottom: 1px solid var(--orc-line); cursor: pointer; font-size: 15px; }
+.orc-calcheck { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--cal); position: relative; flex: none; }
+.orc-calcheck.is-on { background: var(--cal); }
+.orc-calcheck.is-on::after { content: ""; position: absolute; left: 6px; top: 2px; width: 5px; height: 10px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+
+/* ---------- year ---------- */
+/* Year: square day cells, same gap across and down. Column count and cell size are set from the
+   calendar's own width in JS (--cell, --gap), not the window width, so it never overflows a pane. */
+.orc-year { flex: 1; overflow: auto; display: grid; justify-content: center; align-content: start;
+  gap: var(--gap, 24px); padding: 16px 20px 24px; }
+.orc-mini { cursor: pointer; }
+.orc-mini-name { font-weight: 700; font-size: calc(var(--cell, 24px) * .62); margin-bottom: calc(var(--cell, 24px) * .25); padding-left: calc(var(--cell, 24px) * .15); }
+.orc-mini-name.is-current { color: var(--orc-accent); }
+.orc-mini-grid { display: grid; grid-template-columns: repeat(7, var(--cell, 24px)); grid-auto-rows: var(--cell, 24px); }
+.orc-mini-dow, .orc-mini-day { display: flex; align-items: center; justify-content: center; }
+.orc-mini-dow { font-size: calc(var(--cell, 24px) * .36); color: var(--orc-muted); }
+.orc-mini-day { font-size: calc(var(--cell, 24px) * .44); position: relative; z-index: 0; }
+.orc-mini-day.is-today { color: #fff; font-weight: 600; }
+.orc-mini-day.is-today::before { content: ""; position: absolute; z-index: -1; width: 86%; height: 86%; border-radius: 50%; background: var(--orc-accent); }
+
+/* ---------- month ---------- */
+.orc-dow { display: grid; grid-template-columns: repeat(7, 1fr); font-size: 12px; color: var(--orc-muted); text-align: center; padding: 4px 0 2px; border-bottom: 1px solid var(--orc-line); flex: none; }
+.orc-month { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-left: 1px solid var(--orc-line); }
+.orc-month.is-compact { flex: 0 0 auto; min-height: 260px; max-height: 60%; }
+.orc-cell { border-right: 1px solid var(--orc-line); border-bottom: 1px solid var(--orc-line); padding: 3px 3px 2px; display: flex; flex-direction: column; min-height: 0; overflow: hidden; cursor: pointer; }
+.orc-cell.is-weekend { background: color-mix(in srgb, var(--orc-bg2) 60%, var(--orc-bg)); }
+.orc-cell.is-other .orc-daynum { color: var(--orc-faint); }
+.orc-daynum { font-size: 13px; text-align: center; height: 24px; line-height: 24px; flex: none; }
+.orc-daynum span { display: inline-block; min-width: 24px; height: 24px; border-radius: 12px; padding: 0 4px; }
+.orc-cell.is-today .orc-daynum span { background: var(--orc-accent); color: #fff; font-weight: 600; }
+.orc-cell.is-selected:not(.is-today) .orc-daynum span { background: var(--orc-text); color: var(--orc-bg); }
+.orc-month:not(.is-compact) .orc-daynum { text-align: right; height: 20px; line-height: 20px; }
+.orc-month:not(.is-compact) .orc-daynum span { min-width: 20px; height: 20px; border-radius: 10px; }
+.orc-cell-events { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 2px; }
+.orc-more { font-size: 11px; color: var(--orc-muted); padding-left: 4px; }
+.orc-dots { display: flex; justify-content: center; gap: 3px; margin-top: 2px; }
+.orc-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+.orc-chip { font-size: 11px; line-height: 15px; padding: 0 4px 0 6px; border-radius: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; display: flex; gap: 3px; align-items: center; flex: none; position: relative; color: var(--orc-text); }
+.orc-chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--cal); flex: none; }
+.orc-chip.is-allday { background: var(--cal); color: #fff; padding-left: 5px; }
+.orc-chip.is-allday::before { display: none; }
+.orc-chip.is-cont-left { border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -4px; }
+.orc-chip.is-cont-right { border-top-right-radius: 0; border-bottom-right-radius: 0; margin-right: -4px; }
+.orc-chip-time { color: var(--orc-muted); flex: none; }
+.orc-chip.is-allday .orc-chip-time { color: rgba(255,255,255,.85); }
+.orc-chip-title { overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+
+.orc-daylist { flex: 1; min-height: 0; overflow: auto; border-top: 1px solid var(--orc-line); }
+.orc-daylist-head { padding: 8px 14px 4px; font-weight: 600; font-size: 15px; background: var(--orc-bg2); position: sticky; top: 0; }
+.orc-listrow { display: flex; align-items: stretch; gap: 10px; padding: 8px 14px; border-bottom: 1px solid var(--orc-line); cursor: pointer; }
+.orc-listtime { width: 62px; flex: none; font-size: 13px; }
+.orc-listbar { width: 4px; border-radius: 2px; flex: none; }
+.orc-listtitle { font-size: 15px; font-weight: 500; }
+
+/* ---------- week / day ---------- */
+.orc-gutter { width: var(--orc-gutter); flex: none; }
+.orc-gutter-label { font-size: 10px; color: var(--orc-muted); text-align: right; padding-right: 6px; padding-top: 3px; }
+.orc-week-head { display: flex; flex: none; border-bottom: 1px solid var(--orc-line); padding: 4px 0 2px; }
+.orc-week-day { flex: 1; text-align: center; cursor: pointer; }
+.orc-week-dow { font-size: 11px; color: var(--orc-muted); }
+.orc-week-day.is-weekend .orc-week-dow { color: var(--orc-faint); }
+.orc-week-num { font-size: 18px; width: 30px; height: 30px; line-height: 30px; border-radius: 50%; margin: 1px auto 0; }
+.orc-week-day.is-today .orc-week-dow { color: var(--orc-accent); font-weight: 600; }
+.orc-week-day.is-today .orc-week-num { background: var(--orc-accent); color: #fff; font-weight: 600; }
+
+.orc-strip { display: flex; flex: none; padding: 6px 4px 4px; border-bottom: 1px solid var(--orc-line); }
+.orc-strip-day { flex: 1; text-align: center; cursor: pointer; }
+.orc-strip-dow { font-size: 11px; color: var(--orc-muted); font-weight: 600; }
+.orc-strip-day.is-weekend .orc-strip-dow { color: var(--orc-faint); }
+.orc-strip-num { font-size: 18px; width: 34px; height: 34px; line-height: 34px; border-radius: 50%; margin: 2px auto 0; }
+.orc-strip-day.is-today .orc-strip-num { color: var(--orc-accent); font-weight: 600; }
+.orc-strip-day.is-selected .orc-strip-num { background: var(--orc-text); color: var(--orc-bg); font-weight: 600; }
+.orc-strip-day.is-selected.is-today .orc-strip-num { background: var(--orc-accent); color: #fff; }
+.orc-day-label { flex: none; padding: 6px 12px; font-size: 14px; font-weight: 600; border-bottom: 1px solid var(--orc-line); }
+.orc-day-label.is-today { color: var(--orc-accent); }
+
+.orc-allday { display: flex; flex: none; border-bottom: 1px solid var(--orc-line); min-height: 22px; max-height: 96px; overflow: auto; }
+.orc-allday.is-empty { min-height: 14px; }
+.orc-allday-lanes { flex: 1; display: grid; grid-auto-rows: 18px; gap: 2px 0; padding: 2px 2px; }
+.orc-bar { background: var(--cal); color: #fff; font-size: 11px; line-height: 18px; padding: 0 6px; border-radius: 4px; margin: 0 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; font-weight: 500; }
+.orc-bar.is-cont-left { border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: 0; }
+.orc-bar.is-cont-right { border-top-right-radius: 0; border-bottom-right-radius: 0; margin-right: 0; }
+
+.orc-timegrid { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; position: relative; }
+.orc-time-inner { display: grid; position: relative; }
+.orc-time-gutter { position: relative; }
+.orc-hour-label { position: absolute; right: 6px; transform: translateY(-50%); font-size: 10px; color: var(--orc-muted); white-space: nowrap; }
+.orc-daycol { position: relative; border-left: 1px solid var(--orc-line); min-width: 0; }
+.orc-daycol.is-weekend { background: color-mix(in srgb, var(--orc-bg2) 60%, var(--orc-bg)); }
+.orc-hour-line { position: absolute; left: 0; right: 0; height: 0; border-top: 1px solid var(--orc-line); }
+.orc-event { position: absolute; border-radius: 5px; padding: 2px 4px; overflow: hidden; cursor: pointer; font-size: 11px; line-height: 1.2;
+  background: color-mix(in srgb, var(--cal) 22%, var(--orc-bg)); color: var(--cal); border-left: 3px solid var(--cal); }
+.orc-event.is-short { padding: 0 4px; display: flex; align-items: center; gap: 6px; }
+.orc-event-title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.orc-event-time { opacity: .85; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.orc-now { position: absolute; left: 0; right: 0; height: 0; border-top: 2px solid var(--orc-accent); z-index: 5; pointer-events: none; }
+.orc-now::before { content: ""; position: absolute; left: -5px; top: -5px; width: 8px; height: 8px; border-radius: 50%; background: var(--orc-accent); }
+
+/* Older engines without color-mix: fallbacks */
+@supports not (background: color-mix(in srgb, red 50%, blue)) {
+  .orc-event { background: var(--orc-bg2); }
+  .orc-cell.is-weekend, .orc-daycol.is-weekend { background: var(--orc-bg2); }
+}
+
+/* Dark mode: tone the tinted events so text stays readable. */
+.theme-dark .orc-event { background: color-mix(in srgb, var(--cal) 30%, var(--orc-bg)); color: #fff; }
+.theme-dark .orc-seg-btn.is-active { background: var(--background-modifier-hover, #3a3a3c); }
+
+/* ---------- modals ---------- */
+.orc-modal .orc-detail-head { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; }
+.orc-detail-bar { width: 5px; align-self: stretch; border-radius: 3px; min-height: 36px; }
+.orc-detail-title { font-size: 20px; font-weight: 700; }
+.orc-detail-when { margin: 8px 0 16px; font-size: 15px; display: flex; flex-direction: column; gap: 3px; }
+.orc-detail-btns { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; margin-top: 12px; }
+.orc-modal .setting-item { padding: 8px 0; }
+
+/* Phone tweaks */
+.is-phone .orc-title { font-size: 22px; }
+.is-phone .orc-seg-btn { font-size: 12px; }
+
+/* Empty state when the calendar folder has no sub-folders */
+.orc-banner { flex: none; }
+.orc-setup { display: flex; flex-direction: column; gap: 8px; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--orc-line); background: var(--orc-bg2); text-align: center; }
+.orc-setup button { margin-top: 4px; }
+
+/* New-calendar dialog */
+.orc-swatches { display: flex; flex-wrap: wrap; gap: 8px; padding: 6px 0; }
+.orc-swatch { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; box-sizing: border-box; }
+.orc-swatch.is-on { border-color: var(--orc-text, #1c1c1e); box-shadow: 0 0 0 2px var(--orc-bg, #fff) inset; }
+.orc-calcheck-add { border: 2px dashed var(--orc-muted); color: var(--orc-muted); text-align: center; line-height: 18px; font-size: 16px; }
+
+/* ---------- drag and drop ---------- */
+.orc-event { touch-action: pan-y; }
+.orc-resize { position: absolute; left: 0; right: 0; bottom: 0; height: 7px; cursor: ns-resize; }
+@media (pointer: coarse) { .orc-resize { height: 14px; } }
+.orc-event.is-lifted, .orc-chip.is-lifted { opacity: .35; }
+.orc-ghost { pointer-events: none; z-index: 6; opacity: .92; box-shadow: 0 4px 14px rgba(0,0,0,.18);
+  background: color-mix(in srgb, var(--cal) 30%, transparent); border-left: 3px solid var(--cal); }
+.orc-ghost.is-new { background: color-mix(in srgb, var(--cal) 25%, transparent); border: 1.5px solid var(--cal); border-left-width: 3px; }
+.orc.is-dragging, .orc.is-dragging * { cursor: grabbing !important; }
+.orc-drag-ghost { position: fixed; z-index: 1000; pointer-events: none; opacity: .9; box-shadow: 0 6px 18px rgba(0,0,0,.22); background: var(--background-primary, #fff); }
+.orc-cell.is-drop-target { background: color-mix(in srgb, var(--orc-accent) 10%, var(--orc-bg)); outline: 2px solid color-mix(in srgb, var(--orc-accent) 55%, transparent); outline-offset: -2px; }
+.orc-bar.is-dragging-bar { opacity: .85; box-shadow: 0 3px 10px rgba(0,0,0,.2); }
+
+/* ---------- calendars panel extras ---------- */
+.orc-calname { flex: 1; }
+.orc-info { color: var(--orc-accent); font-size: 18px; padding: 0 4px; cursor: pointer; }
+.orc-calrow-action { color: var(--orc-accent); }
+
+/* ---------- dialogs ---------- */
+.orc-cal-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; flex: none; vertical-align: middle; }
+.orc-modal input.orc-wide { width: 100%; min-width: 200px; }
+.orc-notes { padding: 8px 0; border-top: 1px solid var(--background-modifier-border, #e5e5ea); }
+.orc-notes-input { width: 100%; margin-top: 6px; resize: vertical; min-height: 70px; font: inherit; }
+.orc-detail-notes { white-space: pre-wrap; font-size: 13px; color: var(--orc-muted, var(--text-muted)); max-height: 160px; overflow: auto; margin-bottom: 8px; }
+.orc-selectable { -webkit-user-select: text; user-select: text; }
+.orc-scope-btns { flex-wrap: wrap; }
+.orc-detail-btns .orc-left { margin-right: auto; }
+.orc-search-input { width: 100%; font-size: 15px; padding: 6px 8px; margin-bottom: 8px; }
+.orc-search-results { max-height: 55vh; overflow: auto; }
+.orc-import-status { margin: 8px 0; }
+
+/* The calendar takes keyboard focus for shortcuts; no focus ring around the whole view. */
+.orc:focus, .orc:focus-visible { outline: none; }
+.orc-modal .setting-item-control { flex-wrap: nowrap; }
+
+.orc-conflicts { flex: none; padding: 8px 14px; background: color-mix(in srgb, #FF9500 18%, var(--orc-bg)); color: var(--orc-text); font-size: 13px; cursor: pointer; border-bottom: 1px solid var(--orc-line); }
+.orc-version { text-align: center; padding: 10px 0 14px; }
+
+/* Touch: short events are too small for a separate resize grip; holding them moves them. */
+@media (pointer: coarse) { .orc-event.is-short .orc-resize { display: none; } }
+.orc-daylist .orc-listrow.is-lifted { opacity: .35; }
+
+/* ---------- form rows: input + button stay on one line (End date / End repeat "Clear") ---------- */
+.orc-modal .setting-item { gap: 10px; }
+.orc-modal .setting-item-info { min-width: 0; flex: 1 1 auto; }
+.orc-modal .setting-item-control { display: flex; flex-wrap: nowrap !important; align-items: center; justify-content: flex-end; gap: 6px; flex: 0 1 auto; min-width: 0; }
+.orc-modal .setting-item-control input[type="date"], .orc-modal .setting-item-control input[type="time"] { min-width: 0; width: auto; max-width: 150px; flex: 0 1 auto; }
+.orc-modal .setting-item-control button { flex: none; white-space: nowrap; padding: 4px 10px; font-size: 13px; }
+
+/* ---------- Event / Reminder switch at the top of the new-item form ---------- */
+.orc-kind-toggle { display: flex; background: var(--background-secondary, #f2f2f7); border-radius: 9px; padding: 2px; margin: 0 auto 10px; max-width: 260px; }
+.orc-kind-btn { flex: 1; text-align: center; padding: 5px 0; border-radius: 7px; cursor: pointer; font-size: 13px; }
+.orc-kind-btn.is-active { background: var(--background-primary, #fff); box-shadow: 0 1px 3px rgba(0,0,0,.15); font-weight: 600; }
+
+/* ---------- reminder check circle (Apple style) ---------- */
+.orc-rcheck { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--orc-faint, #c7c7cc); flex: none; cursor: pointer; position: relative; display: inline-block; box-sizing: border-box; }
+.orc-rcheck:hover { border-color: var(--cal); }
+.orc-rcheck.is-done { border-color: var(--cal); }
+.orc-rcheck.is-done::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--cal); }
+.orc-rcheck.is-placeholder { cursor: default; border-style: dashed; opacity: .6; }
+.orc-rcheck.is-mini { width: 11px; height: 11px; border: 1.5px solid #fff; margin-right: 3px; vertical-align: -1px; }
+.orc-rcheck.is-mini.is-done::after { inset: 1.5px; background: #fff; }
+.orc-modal .orc-detail-head .orc-rcheck { margin-top: 4px; }
+
+/* reminders on the calendar: a filled bar in the list color with a white circle */
+.orc-chip.is-reminder { background: var(--cal); color: #fff; padding-left: 4px; }
+.orc-chip.is-reminder::before { display: none; }
+.orc-chip.is-reminder .orc-chip-time { color: rgba(255,255,255,.85); }
+.orc-chip.is-reminder.is-done, .orc-bar.is-reminder.is-done, .orc-event.is-reminder.is-done { opacity: .45; }
+.orc-chip.is-reminder.is-done .orc-chip-title, .orc-bar.is-reminder.is-done span:last-child, .orc-event.is-reminder.is-done .orc-event-title span:last-child { text-decoration: line-through; }
+.orc-bar.is-reminder { display: flex; align-items: center; }
+.orc-event.is-reminder { background: var(--cal); color: #fff; border-left: none; padding: 0 5px; display: flex; align-items: center; z-index: 2; }
+.orc-event.is-reminder .orc-event-title { display: flex; align-items: center; min-width: 0; }
+.orc-event.is-reminder .orc-event-title span:last-child { overflow: hidden; text-overflow: ellipsis; }
+.theme-dark .orc-event.is-reminder { background: var(--cal); }
+.orc-listrow.is-reminder { align-items: center; }
+.orc-listrow .orc-rcheck.orc-listcheck { width: 18px; height: 18px; border: 1.5px solid var(--cal); margin: 0; }
+.orc-listrow .orc-rcheck.orc-listcheck.is-done::after { inset: 2.5px; background: var(--cal); }
+.orc-listrow.is-reminder.is-done .orc-listtitle { text-decoration: line-through; color: var(--orc-muted); }
+
+/* header button and calendars panel */
+.orc-rem-btn.is-active { background: var(--orc-accent); color: #fff; }
+.orc-rem-btn.is-active:hover { background: var(--orc-accent); }
+.orc-calpanel-sub { padding: 14px 16px 6px; font-size: 13px; font-weight: 600; color: var(--orc-muted); text-transform: uppercase; letter-spacing: .3px; }
+.orc-calcheck.is-square { border-radius: 6px; }
+.orc[data-view="reminders"] .orc-title-row, .orc[data-view="reminders"] .orc-footer { display: none; }
+
+/* ---------- Reminders page ---------- */
+.orc-rem { flex: 1; min-height: 0; display: flex; background: var(--orc-bg); }
+.orc-rem-side { width: 280px; flex: none; overflow: auto; padding: 14px 12px 20px; background: var(--orc-bg2); border-right: 1px solid var(--orc-line); }
+.orc-rem.is-compact .orc-rem-side { width: 100%; border-right: none; padding: 14px 16px 24px; }
+.orc-rtiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.orc-rtile { background: var(--orc-bg); border-radius: 12px; padding: 9px 11px 9px; cursor: pointer; box-shadow: 0 0 0 1px var(--orc-line); }
+.orc-rtile:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.orc-rtile.is-active { background: var(--cal); color: #fff; box-shadow: none; }
+.orc-rtile.is-active .orc-ricon { background: #fff; color: var(--cal); }
+.orc-rtile.is-active .orc-rtile-label, .orc-rtile.is-active .orc-rtile-count { color: #fff; }
+.orc-rtile-top { display: flex; justify-content: space-between; align-items: center; }
+.orc-ricon { width: 28px; height: 28px; border-radius: 50%; background: var(--cal); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex: none; }
+.orc-ricon-sm { width: 26px; height: 26px; font-size: 13px; }
+.orc-rtile-count { font-size: 24px; font-weight: 700; color: var(--orc-text); }
+.orc-rtile-label { margin-top: 6px; font-size: 14px; font-weight: 600; color: var(--orc-muted); }
+.orc-rsection { margin: 20px 4px 6px; font-size: 20px; font-weight: 700; }
+.orc-rlists { background: var(--orc-bg); border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px var(--orc-line); }
+.orc-rlists-empty { padding: 12px; }
+.orc-rlistrow { display: flex; align-items: center; gap: 10px; padding: 8px 10px; cursor: pointer; border-bottom: 1px solid var(--orc-line); }
+.orc-rlistrow:last-child { border-bottom: none; }
+.orc-rlistrow.is-active { background: color-mix(in srgb, var(--cal) 16%, var(--orc-bg)); }
+.orc-rlistname { flex: 1; min-width: 0; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.orc-rlistcount { color: var(--orc-muted); font-size: 15px; }
+.orc-rlistrow .orc-info { font-size: 16px; color: var(--cal); }
+.orc-radd-list { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding: 4px; color: var(--orc-accent); cursor: pointer; font-size: 15px; }
+.orc-radd-plus { width: 22px; height: 22px; border-radius: 50%; background: var(--orc-accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 17px; line-height: 1; }
+.orc-rem-main { flex: 1; min-width: 0; display: flex; flex-direction: column; padding: 10px 22px 0; }
+.orc-rem.is-compact .orc-rem-main { padding: 4px 16px 0; }
+.orc-rback { display: flex; align-items: center; gap: 2px; color: var(--cal); font-size: 16px; cursor: pointer; padding: 4px 0 2px; }
+.orc-rhead { display: flex; align-items: baseline; gap: 10px; padding: 6px 0 4px; }
+.orc-rtitle { flex: 1; min-width: 0; font-size: 30px; font-weight: 700; color: var(--cal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -.3px; }
+.orc-rtitle-count { font-size: 30px; font-weight: 600; color: var(--cal); }
+.orc-rplus { font-size: 28px; line-height: 1; color: var(--cal); cursor: pointer; padding: 0 2px; }
+.orc-rdonebar { display: flex; align-items: center; gap: 2px; font-size: 13px; color: var(--orc-muted); padding: 2px 0 8px; border-bottom: 1px solid var(--orc-line); }
+.orc-rlink { color: var(--cal); cursor: pointer; }
+.orc-rshow { margin-left: auto; }
+.orc-ritems { flex: 1; min-height: 0; overflow: auto; padding-bottom: 30px; }
+.orc-rgroup { margin-top: 8px; }
+.orc-rgroup-head { font-size: 17px; font-weight: 700; padding: 8px 0 2px; border-bottom: 1px solid var(--orc-line); }
+.orc-rgroup-head.is-overdue { color: #FF3B30; }
+.orc-rrow { display: flex; align-items: flex-start; gap: 11px; padding: 9px 0 0; cursor: pointer; }
+.orc-rrow .orc-rcheck { margin-top: 0; }
+.orc-rrow-body { flex: 1; min-width: 0; padding-bottom: 9px; border-bottom: 1px solid var(--orc-line); }
+.orc-rrow-title { font-size: 15px; line-height: 20px; word-break: break-word; }
+.orc-rprio { color: var(--cal); font-weight: 700; }
+.orc-rrow-meta { font-size: 13px; color: var(--orc-muted); margin-top: 1px; white-space: pre-wrap; }
+.orc-rrow-meta .is-overdue { color: #FF3B30; }
+.orc-rrow-url { font-size: 13px; color: var(--cal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.orc-rflag { color: #FF9500; font-size: 15px; padding-top: 1px; }
+.orc-rrow.is-done .orc-rrow-title { color: var(--orc-muted); }
+.orc-rrow.is-toggling { opacity: .6; }
+.orc-radd { cursor: text; }
+.orc-radd-input { flex: 1; min-width: 0; border: none !important; background: transparent !important; box-shadow: none !important; padding: 0 0 9px !important; font-size: 15px; line-height: 20px; height: auto; border-bottom: 1px solid var(--orc-line) !important; border-radius: 0 !important; color: var(--orc-text); outline: none; }
+.orc-rempty { text-align: center; color: var(--orc-muted); font-size: 17px; padding: 40px 0; }
+
+/* Narrow panes (iPhone): the segmented control already has Year, so the back label is dropped to
+   give the four buttons room. */
+.orc.is-narrow .orc-back { display: none; }
+.orc.is-narrow .orc-nav-left { min-width: 0; gap: 2px; }
+.orc.is-narrow .orc-nav-right { min-width: 0; gap: 2px; }
+.orc.is-narrow .orc-nav { gap: 6px; }
+.orc.is-narrow .orc-seg { min-width: 0; }
+.orc.is-narrow .orc-seg-btn { font-size: 12.5px; min-width: 0; overflow: hidden; }
+
+/* Form rows with a long description (Alert): the control never covers the text. */
+.orc-modal .setting-item-info { flex: 1 1 40%; }
+.orc-modal .setting-item-control select { min-width: 0; max-width: 100%; }
+.orc-modal .setting-item-control { max-width: 62%; }
+.orc-modal .setting-item-control input.orc-wide { min-width: 0; }
+
+/* ---------- iPhone month layouts (Apple's View menu: Compact / Stacked / Details / List) ---------- */
+.orc-style-btn { font-size: 13px; color: var(--orc-accent); background: var(--orc-bg2); border-radius: 12px; padding: 3px 9px; cursor: pointer; white-space: nowrap; flex: none; }
+.orc-style-menu { position: absolute; z-index: 50; background: var(--orc-bg); border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,.22); min-width: 220px; overflow: hidden; }
+.orc-style-item { display: flex; gap: 8px; align-items: center; padding: 9px 14px 9px 10px; cursor: pointer; font-size: 15px; border-bottom: 1px solid var(--orc-line); }
+.orc-style-item:last-child { border-bottom: none; }
+.orc-style-tick { width: 16px; color: var(--orc-accent); font-weight: 700; text-align: center; }
+.orc-month-scroll { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.orc-month.is-details { max-height: none; min-height: 0; }
+.orc-month.is-details .orc-cell .orc-cell { overflow: hidden; padding: 2px 1px 3px; }
+.orc-month.is-details .orc-cell-events { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.orc-chip.is-detail { font-size: 10px; line-height: 13px; padding: 0 2px 0 3px; border-radius: 3px; gap: 2px;
+  background: color-mix(in srgb, var(--cal) 18%, var(--orc-bg)); color: var(--cal); border-left: 2px solid var(--cal); }
+.orc-chip.is-detail::before { display: none; }
+.orc-chip.is-detail .orc-chip-time { display: none; }
+.orc-chip.is-detail .orc-chip-title { font-weight: 600; }
+.orc-chip.is-detail.is-allday, .orc-chip.is-detail.is-reminder { background: var(--cal); color: #fff; border-left: none; }
+.orc-chip.is-detail .orc-rcheck.is-mini { width: 8px; height: 8px; border-width: 1px; margin-right: 1px; }
+.orc-month.is-details .orc-more { font-size: 10px; color: var(--orc-muted); text-align: center; }
+.orc-month.is-compact:not(.is-list) { flex: 1 1 auto; max-height: none; } /* Compact: dots only, grid fills the screen */
+.orc.is-narrow .orc-title { font-size: 21px; }
+
+/* Multi-day events in month view: one bar across the days (Apple style). */
+.orc-month { --dn: 28px; --lh: 17px; }
+.orc-chip.orc-mbar { align-self: start; z-index: 3; margin: calc(var(--dn) + var(--lane, 0) * var(--lh)) 3px 0; height: calc(var(--lh) - 2px); background: var(--cal); color: #fff; padding-left: 5px; }
+.orc-chip.orc-mbar::before { display: none; }
+.orc-chip.orc-mbar .orc-chip-time { color: rgba(255,255,255,.85); }
+.orc-chip.orc-mbar.is-cont-left { margin-left: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.orc-chip.orc-mbar.is-cont-right { margin-right: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.orc-month.is-details .orc-chip.orc-mbar { font-size: 10px; line-height: 12px; margin-left: 2px; margin-right: 2px; }
+.orc-mbar-space { flex: none; }
+.orc.is-dragging .orc-mbar { pointer-events: none; }
+
+/* Paging: the current period and the next one slide together. */
+.orc-stage { flex: 1; min-height: 0; position: relative; overflow: hidden; }
+.orc-stage > .orc-body { position: absolute; inset: 0; will-change: transform; background: var(--orc-bg); }
+.orc.is-paging .orc-stage > .orc-body { pointer-events: none; }

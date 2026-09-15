@@ -1,0 +1,9 @@
+{
+  "id": "syncthing-calendar",
+  "name": "Syncthing Calendar",
+  "version": "3.1.9",
+  "minAppVersion": "1.4.0",
+  "description": "Year, month, week and day calendar with reminders, stored as plain Markdown notes (Full Calendar format). Built for Syncthing: fully local, no network access.",
+  "author": "syncthing-calendar",
+  "isDesktopOnly": false
+}
