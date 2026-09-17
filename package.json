@@ -1,0 +1,17 @@
+{
+  "name": "syncthing-calendar",
+  "version": "3.1.10",
+  "private": true,
+  "description": "iOS-style calendar for Obsidian on Full Calendar-format notes. Local only.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "check": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "esbuild": "0.27.7",
+    "typescript": "6.0.3",
+    "obsidian": "^1.13.2"
+  }
+}
