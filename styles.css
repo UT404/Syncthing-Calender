@@ -239,7 +239,9 @@
 .orc-modal .setting-item { gap: 10px; }
 .orc-modal .setting-item-info { min-width: 0; flex: 1 1 auto; }
 .modal.orc-modal .setting-item .setting-item-control { display: flex; flex-wrap: nowrap; align-items: center; justify-content: flex-end; gap: 6px; flex: 0 1 auto; min-width: 0; }
-.orc-modal .setting-item-control input[type="date"], .orc-modal .setting-item-control input[type="time"] { min-width: 0; width: auto; max-width: 150px; flex: 0 1 auto; }
+/* A date field never shrinks below a tappable width; if the row is too narrow the Clear button wraps below. */
+.modal.orc-modal .setting-item .setting-item-control { flex-wrap: wrap; }
+.orc-modal .setting-item-control input[type="date"], .orc-modal .setting-item-control input[type="time"] { min-width: 130px; width: auto; max-width: 150px; flex: 0 1 auto; }
 .orc-modal .setting-item-control button { flex: none; white-space: nowrap; padding: 4px 10px; font-size: 13px; }
 
 /* ---------- Event / Reminder switch at the top of the new-item form ---------- */
@@ -390,3 +392,10 @@ input.orc-radd-input.orc-radd-input[type="text"]:focus-visible { flex: 1; min-wi
 .orc-stage { flex: 1; min-height: 0; position: relative; overflow: hidden; }
 .orc-stage > .orc-body { position: absolute; inset: 0; will-change: transform; background: var(--orc-bg); }
 .orc.is-paging .orc-stage > .orc-body { pointer-events: none; }
+
+/* Phones and tablets: Obsidian drops a wide field onto its own line under the label. There the field
+   uses the full width from the left edge instead of the desktop 62% cap, so the End date field is
+   never squeezed off-screen by the Clear button. */
+.is-mobile .modal.orc-modal .setting-item .setting-item-control { max-width: 100%; justify-content: flex-start; }
+.is-mobile .orc-modal .setting-item-control input[type="date"] { flex: 1 1 160px; max-width: 240px; min-width: 150px; }
+.is-mobile .orc-modal .setting-item-control button { width: auto; flex: none; }
