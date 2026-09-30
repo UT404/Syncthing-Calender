@@ -1,4 +1,4 @@
-# Syncthing Calendar (Obsidian plugin) v3.1.12
+# Syncthing Calendar (Obsidian plugin) v3.1.13
 
 A year, month, week and day calendar with reminders, in the style of the iPhone and Mac Calendar apps.
 Every event and reminder is a plain Markdown note in your vault, so you can sync it with Syncthing (or
@@ -161,6 +161,10 @@ and `npm run check` (types).
 
 ## Changes
 
+**3.1.13**
+- Release fix only: the 3.1.12 release tag pointed at a commit without `manifest.json` in the repo
+  root. No plugin changes.
+
 **3.1.12**
 - Build: `obsidian` is now a declared dev dependency, and the repo ships a `package-lock.json`, so
   automated source reviews can install dependencies.
@@ -169,11 +173,11 @@ and `npm run check` (types).
 - Mobile: the End date field in the event form was squeezed off-screen by the Clear button, so
   multi-day events couldn't be created on phones. Form fields now use the full width on mobile.
 
-## Release hashes (v3.1.12)
+## Release hashes (v3.1.13)
 ```
 main.js       1622bb17a4cff986d46be776f667f8d4eb749e574d329292ad4ce35e343cc3d6
 styles.css    4f42bbc6516c79473e36cf1606c2e05ce4978803be7aeec9e84b9b06ea0b21b6
-manifest.json 6f06b072691aec39a8dcc7df26666a295d850a79179368870cabfb4e6d439013
+manifest.json b17da1d3fe411496f9aadfb105fe8eca095aa646857cb1967bfc17d591f76a0c
 ```
 
 ## License
